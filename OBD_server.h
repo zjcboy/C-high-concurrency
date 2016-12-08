@@ -154,14 +154,14 @@ typedef struct OBD_server_struct{
 	ev_t			ev;
 	mysql_t		 	mysqlpool;
 	redis_t			redis;
-	OBD_memory_t		obd_mempool;
-	Data_memory_t		data_mempool;
+	memory_t		obd_mempool;
+	memory_t		data_mempool;
 	tpool_t			thread_pool;
 	boolean (*init)(server_t*);
 	void (*release)(server_t*);
 }server_t;
 
-
+//static server_t Server;
 
 static inline void OBD_server_release(server_t *server)
 {
@@ -173,6 +173,7 @@ static inline void OBD_server_release(server_t *server)
 	mq_release(&server->mq);
 }
 
+#define OBD_DATA_LENGTH		256
 static inline boolean OBD_server_init(server_t *server,u16_t length)
 {
 	if(!server)
@@ -183,11 +184,11 @@ static inline boolean OBD_server_init(server_t *server,u16_t length)
 		return FALSE;
 	if(redis_init(&server->redis))
 		return FALSE;
-	if(OBD_memory_pool_init(&server->obd_mempool))
+	if(memory_pool_init(&server->obd_mempool,sizeof(OBD_t)))
 		return FALSE;
-	if(Data_memory_pool_init(&server->data_mempool))
+	if(memory_pool_init(&server->data_mempool,OBD_DATA_LENGTH))
 		return FALSE;
-	if(threadpool_init(&server->thread_pool,length))
+	if(threadpool_init(&server->thread_pool))
 		return FALSE;
 	ev_struct_init(&server->ev);
 	server->init = OBD_server_init;
