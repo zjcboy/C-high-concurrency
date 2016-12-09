@@ -1,9 +1,7 @@
 #ifndef __OBD_STRUCT_H__
 #define __OBD_STRUCT_H__
 
-#define <stdio.h>
-#define <stdlib.h>
-
+#include "obd_mq.h"
 typedef struct obd_struct{
 	void	*data;
 	char	*sql;
@@ -19,6 +17,7 @@ typedef struct obd_struct{
 
 static inline boolean ODB_init(OBD_t *obd)
 {
+	list_init(&obd->list);
 	return FALSE;
 }
 
